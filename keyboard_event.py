@@ -1,5 +1,4 @@
 from pynput import keyboard
-import time
 
 
 class KeyboardHandler:
@@ -17,11 +16,7 @@ class KeyboardHandler:
 
 def on_press(key: keyboard.Key):
     try:
-        if key == keyboard.Key.media_volume_down:
-            print("volume down pressed")
-        elif key == keyboard.Key.media_volume_up:
-            print("volume up pressed")
-        elif key == keyboard.Key.media_play_pause:
+        if key == keyboard.Key.media_play_pause:
             print("Play pause pressed")
         elif key == keyboard.Key.media_next:
             print("Skip next pressed")

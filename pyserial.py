@@ -1,4 +1,3 @@
-
 import serial
 import serial.tools.list_ports_windows
 import asyncio
@@ -11,7 +10,7 @@ class SerialConnection:
         self.BAUD_RATE = 115200
         self.ser = None
         self.connected = False
-        self.VALID_COMMANDS = {"PLAY", "SKIP_NEXT", "SKIP_PREV", "MUTE", "VOL_UP", "VOL_DOWN"}
+        self.VALID_COMMANDS = ["PLAY", "SKIP_NEXT", "SKIP_PREV", "MUTE", "VOL"]
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(__name__)
 
@@ -94,7 +93,8 @@ class SerialConnection:
                 for command in self.VALID_COMMANDS:
                     if command in data:
                         self.logger.debug(f"Received valid command: {command}")
-                        return command
+                        # print("pyserial: " + str(data))
+                        return data
 
                 if data:  # Log invalid commands for debugging
                     self.logger.warning(f"Received invalid command: {data}")
@@ -108,3 +108,6 @@ class SerialConnection:
         except UnicodeDecodeError as e:
             self.logger.error(f"Error decoding serial data: {str(e)}")
             return None
+
+    async def volume_change_accept(self):
+        self.ser.write(b"VOL_ACP\n")
