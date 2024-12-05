@@ -1,13 +1,14 @@
+from winrt.windows.media.control import \
+    GlobalSystemMediaTransportControlsSessionManager as MediaManager
+from winrt.windows.storage.streams import DataReader, Buffer, InputStreamOptions
+
 import asyncio
 from io import BytesIO
 
 import keyboard_event  # For listening to keyboard events
 import pyserial
+import volume_potentiometer
 from PIL import Image
-from winrt.windows.media.control import \
-    GlobalSystemMediaTransportControlsSessionManager as MediaManager
-from winrt.windows.storage.streams import DataReader, Buffer, InputStreamOptions
-
 
 class Media:
     def __init__(self):
@@ -18,6 +19,7 @@ class Media:
         self.current_media_thumbnail = None  # Store the current thumbnail
         self.keyboard_handler = keyboard_event.KeyboardHandler()  # Controller for keyboard
         self.serial_handler = pyserial.SerialConnection()
+        self.volume_handler = volume_potentiometer.VolumeControl()
 
     ######### SESSION HANDLERS #########
     async def session_timer_start(self):
@@ -99,50 +101,6 @@ class Media:
             self.current_media_title = None
 
     ######### SERIAL HANDLERS #########
-    # async def serial_init(self):
-    #     await self.serial_handler.start_connection()
-    #
-    #     while True:
-    #         if not self.serial_handler.ser or not (
-    #             await self.serial_handler.check_connection()):
-    #
-    #             await self.serial_handler.start_connection()
-    #
-    #
-    # async def serial_reader(self):
-    #     while True:
-    #         data = await self.serial_handler.read_serial_data()
-    #
-    #         if not data:
-    #             continue
-    #
-    #         if data == "PLAY":
-    #             self.keyboard_handler.press_key(
-    #                 keyboard_event.keyboard.Key.media_play_pause)
-    #
-    #         elif data == "SKIP_NEXT":
-    #             self.keyboard_handler.press_key(
-    #                 keyboard_event.keyboard.Key.media_next)
-    #
-    #         elif data == "SKIP_PREV":
-    #             self.keyboard_handler.press_key(
-    #                 keyboard_event.keyboard.Key.media_previous)
-    #
-    #         elif data == "MUTE":
-    #             self.keyboard_handler.press_key(
-    #                 keyboard_event.keyboard.Key.media_volume_mute)
-    #
-    #         elif data == "VOL_UP":
-    #             for i in range(5):
-    #                 self.keyboard_handler.press_key(
-    #                     keyboard_event.keyboard.Key.media_volume_up)
-    #
-    #         elif data == "VOL_DOWN":
-    #             for i in range(5):
-    #                 self.keyboard_handler.press_key(
-    #                     keyboard_event.keyboard.Key.media_volume_down)
-    #
-    #         await asyncio.sleep(0.1)
 
     async def serial_init(self):
         while True:
@@ -150,7 +108,7 @@ class Media:
                 success = await self.serial_handler.start_connection()
                 if success:
                     # Initial connection check
-                    if not await self.serial_handler.check_connection():
+                    if not (await self.serial_handler.check_connection()):
                         self.serial_handler.connected = False
             await asyncio.sleep(1)  # Check connection every second
 
@@ -158,11 +116,23 @@ class Media:
         while True:
             if self.serial_handler.connected:
                 data = await self.serial_handler.read_serial_data()
-                if data:
-                    await self.handle_command(data)
+                if "VOL" in str(data):
+                    # words = data.split()
+                    # print(words)
+                    self.volume_handler.set_volume(int((data.split())[1]))
+                    await self.serial_handler.volume_change_accept()
+
+
+                elif data:
+                    await self.key_commands(data)
+
             await asyncio.sleep(0.1)
 
-    async def handle_command(self, data):
+    ######### KEYBOARD HANDLERS #########
+    async def keyboard_init(self):
+        self.keyboard_handler.key_listener.start()
+
+    async def key_commands(self, data):
         command_map = {
             "PLAY": keyboard_event.keyboard.Key.media_play_pause,
             "SKIP_NEXT": keyboard_event.keyboard.Key.media_next,
@@ -180,13 +150,10 @@ class Media:
             else:
                 self.keyboard_handler.press_key(key)
 
-    ######### KEYBOARD HANDLERS #########
-    async def keyboard_init(self):
-        self.keyboard_handler.key_listener.start()
-
 
 async def main():
     """Entry point to initialize and run the media session timer."""
+
     media_obj = Media()
     timer_task = asyncio.create_task(media_obj.session_timer_start())
     keyboard_init = asyncio.create_task(media_obj.keyboard_init())
