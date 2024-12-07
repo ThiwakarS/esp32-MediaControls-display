@@ -1,0 +1,14 @@
+# ALWAYS BUTTONS, THEN FOLLOWED BY SLIDERS. CONFIGURE PIN OUTS PROPERLY!
+switch_functions:
+  - play_pause
+  - media_previous
+  - media_next
+  - media_volume_mute
+  - ctrl a
+  - ctrl c
+  - ctrl v
+slider_functions:
+  - MASTER_VOLUME
+  - brave.exe
+  - Discord.exe
+  - spotify.exe
