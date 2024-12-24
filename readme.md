@@ -1,5 +1,7 @@
 ## **Esp32 Media Controller**
 
+### To check out the newest version, check the latest branch.
+
 This project, inspired by jailbroken Spotify car thing, ESP32 Spotify controls, and Deej, allows you to control your Windows media playing softwares (Spotify, browser, etc.) using an ESP32 board with a 2.4-inch TFT display.
 
 **Features:**
