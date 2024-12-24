@@ -1,12 +1,35 @@
-### About this project
- 
-- This project is inspired from jail broken spotify car thing, esp32 spotify controls and Deej.
-- This is a project to get the media controls from a windows machine to an esp32 with a display.
-- Media controls in the session, the current media playing in your system, may it be playing on browser or spotify or anything. the controls would be play, pause, skip next, skip previous, volume controls.
-- With the fifth upload i have successfully made multiple potentiometers work together, controlling master volume and individual app volumes.
-- Added 7 buttons and 4 potentiometers, which can be fully customisable.
-- The no of buttons, no of sliders and the functions can be easily configured from the config.yaml file.
-- Added a main file to take charge of everything.
-- For the next step, I will add a 128*64 oled display for displaying title of media playing and much more.
-- with the future uploads, I will be creating branches with versions of this software, making it better and more robust.
-- check out the branches for any feature updates, a new feature will have its own new branch, and the main branch will contain the latest feature, or code that I created.
+## **Esp32 Media Controller**
+
+This project, inspired by jailbroken Spotify car thing, ESP32 Spotify controls, and Deej, allows you to control your Windows media playing softwares (Spotify, browser, etc.) using an ESP32 board with a 2.4-inch TFT display.
+
+**Features:**
+
+- Media Controls: Play/Pause, Skip Next/Previous, Volume Control
+
+- Customizable: Configure button and potentiometer functions in config.yaml.
+
+- Multiple Controls: Supports multiple potentiometers for master volume and individual app volumes.
+  
+- Display: 2.4-inch TFT display for media information. Displays album art thumbnails.
+
+**How it Works:**
+
+The ESP32 reads button presses and potentiometer values.
+Python script translates these inputs into media controls (e.g., Play/Pause, Volume Up).
+Python interacts with Windows media sessions to control playback and retrieves album art thumbnails.
+Python sends image data and media information to the ESP32.
+ESP32 displays the album art and media information on the TFT display.
+To Get Started:
+
+- Install dependencies: pip install pycaw pywin32 pyserial pillow
+
+- Configure config.yaml: Define button and potentiometer functions.
+
+- Connect the TFT display to the ESP32.
+
+- Run the Python script: python main.py
+
+  
+**Contributing:**
+
+Contributions are welcome! Please check out the branches for the latest features and bug fixes.
